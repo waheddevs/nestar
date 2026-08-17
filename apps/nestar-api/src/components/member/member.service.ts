@@ -11,14 +11,14 @@ export class MemberService {
 	}
 
 	public async login(): Promise<string> {
-		return 'signup executed';
+		return 'login executed';
 	}
 
 	public async updateMember(): Promise<string> {
-		return 'signup executed';
+		return 'updateMember executed';
 	}
 
 	public async getMember(): Promise<string> {
-		return 'signup executed';
+		return 'getMember executed';
 	}
 }
