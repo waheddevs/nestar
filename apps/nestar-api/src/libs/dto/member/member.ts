@@ -10,6 +10,9 @@ export class Member {
 	@Field(() => MemberType)
 	memberType: MemberType;
 
+	@Field(() => MemberStatus)
+	memberStatus: MemberStatus;
+
 	@Field(() => MemberAuthType)
 	memberAuthType: MemberAuthType;
 
