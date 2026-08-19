@@ -19,7 +19,7 @@ export class MemberService {
 			return result;
 		} catch (err) {
 			console.log('Error, serviceModel', err);
-			throw new BadRequestException();
+			throw new BadRequestException(Message.USED_MEMBER_NICK_OR_PHONE);
 		}
 	}
 

@@ -9,7 +9,7 @@ dns.setServers(['8.8.8.8', '1.1.1.1']);
 
 async function bootstrap() {
 	const app = await NestFactory.create(AppModule);
-	app.useGlobalPipes;(new ValidationPipe())
+	app.useGlobalPipes(new ValidationPipe());
 	await app.listen(process.env.PORT_API ?? 3000);
 }
 bootstrap();
