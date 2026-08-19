@@ -21,7 +21,7 @@ import { T } from './libs/types/common';
 				const graphQLFormattedError = {
 					code: error?.extensions?.code,
 					status: error?.extensions?.status || error?.extensions?.originalError?.statusCode,
-					message: error?.extensions?.originalError?.message || error?.message,
+					message: error?.extensions?.originalError?.message || error?.message, 
 				};
 				console.log('GRAPHQL GLOBAL ERROR:', graphQLFormattedError);
 				return graphQLFormattedError;
