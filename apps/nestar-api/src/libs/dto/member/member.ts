@@ -22,7 +22,7 @@ export class Member {
 	@Field(() => String)
 	memberNick: string;
 
-	memberPassword: string;
+	memberPassword?: string;
 
 	@Field(() => String, { nullable: true })
 	memberFullName?: string;
@@ -77,4 +77,7 @@ export class Member {
 
 	@Field(() => Date)
 	updatedAt: Date;
+
+	@Field(() => String, { nullable: true })
+	accessToken?: string;
 }
