@@ -1,26 +1,15 @@
 import { Schema } from 'mongoose';
-import { CommentGroup, CommentStatus } from '../libs/enums/comments.enum';
+import { ViewGroup } from '../libs/enums/view.enum';
 
-const CommentSchema = new Schema(
+const ViewSchema = new Schema(
 	{
-		commentStatus: {
+		viewGroup: {
 			type: String,
-			enum: CommentStatus,
-			default: CommentStatus.ACTIVE,
-		},
-
-		commentGroup: {
-			type: String,
-			enum: CommentGroup,
+			enum: ViewGroup,
 			required: true,
 		},
 
-		commentContent: {
-			type: String,
-			required: true,
-		},
-
-		commentRefId: {
+		viewRefId: {
 			type: Schema.Types.ObjectId,
 			required: true,
 		},
@@ -28,9 +17,12 @@ const CommentSchema = new Schema(
 		memberId: {
 			type: Schema.Types.ObjectId,
 			required: true,
+			ref: 'Member',
 		},
 	},
-	{ timestamps: true, collection: 'comments' },
+	{ timestamps: true, collection: 'views' },
 );
 
-export default CommentSchema;
+ViewSchema.index({ memberId: 1, viewRefId: 1 }, { unique: true });
+
+export default ViewSchema;
