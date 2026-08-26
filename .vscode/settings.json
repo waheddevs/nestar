@@ -16,5 +16,6 @@
 	"[jsonc]": {
 		"editor.defaultFormatter": "esbenp.prettier-vscode"
 	},
-	"js/ts.experimental.useTsgo": false
+	"js/ts.experimental.useTsgo": false,
+	"js/ts.tsdk.path": "node_modules\\typescript\\lib"
 }
