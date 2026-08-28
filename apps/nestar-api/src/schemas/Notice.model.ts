@@ -1,56 +1,37 @@
-import { Schema } from 'mongoose';
-import { BoardArticleCategory, BoardArticleStatus } from '../libs/enums/board-article.enum';
+import mongoose, { Schema } from 'mongoose';
+import { NoticeCategory, NoticeStatus } from '../libs/enums/notice.enum';
 
-const BoardArticleSchema = new Schema(
+const NoticeSchema = new Schema(
 	{
-		articleCategory: {
+		noticeCategory: {
 			type: String,
-			enum: BoardArticleCategory,
+			enum: NoticeCategory,
 			required: true,
 		},
 
-		articleStatus: {
+		noticeStatus: {
 			type: String,
-			enum: BoardArticleStatus,
-			default: BoardArticleStatus.ACTIVE,
+			enum: NoticeStatus,
+			default: NoticeStatus.ACTIVE,
 		},
 
-		articleTitle: {
-			type: String,
-			required: true,
-		},
-
-		articleContent: {
+		noticeTitle: {
 			type: String,
 			required: true,
 		},
 
-		articleImage: {
+		noticeContent: {
 			type: String,
+			required: true,
 		},
-
-		articleLikes: {
-			type: Number,
-			default: 0,
-		},
-
-		articleViews: {
-			type: Number,
-			default: 0,
-		},
-
-		articleComments: {
-			type: Number,
-			default: 0,
-		},
-
+		
 		memberId: {
 			type: Schema.Types.ObjectId,
 			required: true,
 			ref: 'Member',
 		},
 	},
-	{ timestamps: true, collection: 'boardArticles' },
+	{ timestamps: true, collection: 'notices' },
 );
 
-export default BoardArticleSchema;
+export default NoticeSchema;

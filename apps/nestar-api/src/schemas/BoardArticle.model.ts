@@ -1,93 +1,47 @@
 import { Schema } from 'mongoose';
-import { PropertyLocation, PropertyStatus, PropertyType } from '../libs/enums/property.enum';
+import { BoardArticleCategory, BoardArticleStatus } from '../libs/enums/board-article.enum';
 
-const PropertySchema = new Schema(
+const BoardArticleSchema = new Schema(
 	{
-		propertyType: {
+		articleCategory: {
 			type: String,
-			enum: PropertyType,
+			enum: BoardArticleCategory,
 			required: true,
 		},
 
-		propertyStatus: {
+		articleStatus: {
 			type: String,
-			enum: PropertyStatus,
-			default: PropertyStatus.ACTIVE,
+			enum: BoardArticleStatus,
+			default: BoardArticleStatus.ACTIVE,
 		},
 
-		propertyLocation: {
-			type: String,
-			enum: PropertyLocation,
-			required: true,
-		},
-
-		propertyAddress: {
+		articleTitle: {
 			type: String,
 			required: true,
 		},
 
-		propertyTitle: {
+		articleContent: {
 			type: String,
 			required: true,
 		},
 
-		propertyPrice: {
-			type: Number,
-			required: true,
+		articleImage: {
+			type: String,
 		},
 
-		propertySquare: {
-			type: Number,
-			required: true,
-		},
-
-		propertyBeds: {
-			type: Number,
-			required: true,
-		},
-
-		propertyRooms: {
-			type: Number,
-			required: true,
-		},
-
-		propertyViews: {
+		articleLikes: {
 			type: Number,
 			default: 0,
 		},
 
-		propertyLikes: {
+		articleViews: {
 			type: Number,
 			default: 0,
 		},
 
-		propertyComments: {
+		articleComments: {
 			type: Number,
 			default: 0,
-		},
-
-		propertyRank: {
-			type: Number,
-			default: 0,
-		},
-
-		propertyImages: {
-			type: [String],
-			required: true,
-		},
-
-		propertyDesc: {
-			type: String,
-		},
-
-		propertyBarter: {
-			type: Boolean,
-			default: false,
-		},
-
-		propertyRent: {
-			type: Boolean,
-			default: false,
 		},
 
 		memberId: {
@@ -95,22 +49,8 @@ const PropertySchema = new Schema(
 			required: true,
 			ref: 'Member',
 		},
-
-		soldAt: {
-			type: Date,
-		},
-
-		deletedAt: {
-			type: Date,
-		},
-
-		constructedAt: {
-			type: Date,
-		},
 	},
-	{ timestamps: true, collection: 'properties' },
+	{ timestamps: true, collection: 'boardArticles' },
 );
 
-PropertySchema.index({ propertyType: 1, propertyLocation: 1, propertyTitle: 1, propertyPrice: 1 }, { unique: true });
-
-export default PropertySchema;
+export default BoardArticleSchema;

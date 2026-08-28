@@ -1,58 +1,20 @@
 import { Schema } from 'mongoose';
-import { NotificationGroup, NotificationStatus, NotificationType } from '../libs/enums/notification.enum';
 
-const NotificationSchema = new Schema(
+const FollowSchema = new Schema(
 	{
-		notificationType: {
-			type: String,
-			enum: NotificationType,
-			required: true,
-		},
-
-		notificationStatus: {
-			type: String,
-			enum: NotificationStatus,
-			default: NotificationStatus.WAIT,
-		},
-
-		notificationGroup: {
-			type: String,
-			enum: NotificationGroup,
-			required: true,
-		},
-
-		notificationTitle: {
-			type: String,
-			required: true,
-		},
-
-		notificationDesc: {
-			type: String,
-		},
-
-		authorId: {
+		followingId: {
 			type: Schema.Types.ObjectId,
 			required: true,
-			ref: 'Member',
 		},
 
-		receiverId: {
+		followerId: {
 			type: Schema.Types.ObjectId,
 			required: true,
-			ref: 'Member',
-		},
-
-		propertyId: {
-			type: Schema.Types.ObjectId,
-			ref: 'Property',
-		},
-
-		articleId: {
-			type: Schema.Types.ObjectId,
-			ref: 'BoardArticle',
 		},
 	},
-	{ timestamps: true, collection: 'notifications' },
+	{ timestamps: true },
 );
 
-export default NotificationSchema;
+FollowSchema.index({ followingId: 1, followerId: 1 }, { unique: true });
+
+export default FollowSchema;

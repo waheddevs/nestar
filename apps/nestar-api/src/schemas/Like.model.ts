@@ -1,20 +1,28 @@
 import { Schema } from 'mongoose';
+import { ViewGroup } from '../libs/enums/view.enum';
 
-const FollowSchema = new Schema(
+const LikeSchema = new Schema(
 	{
-		followingId: {
-			type: Schema.Types.ObjectId,
+		likeGroup: {
+			type: String,
+			enum: ViewGroup,
 			required: true,
 		},
 
-		followerId: {
+		likeRefId: {
 			type: Schema.Types.ObjectId,
 			required: true,
+		},
+		
+		memberId: {
+			type: Schema.Types.ObjectId,
+			required: true,
+			ref: 'Member',
 		},
 	},
-	{ timestamps: true },
+	{ timestamps: true, collection: 'likes' },
 );
 
-FollowSchema.index({ followingId: 1, followerId: 1 }, { unique: true });
+LikeSchema.index({ memberId: 1, likeRefId: 1 }, { unique: true });
 
-export default FollowSchema;
+export default LikeSchema;

@@ -1,37 +1,36 @@
-import mongoose, { Schema } from 'mongoose';
-import { NoticeCategory, NoticeStatus } from '../libs/enums/notice.enum';
+import { Schema } from 'mongoose';
+import { CommentGroup, CommentStatus } from '../libs/enums/comment.enum';
 
-const NoticeSchema = new Schema(
+const CommentSchema = new Schema(
 	{
-		noticeCategory: {
+		commentStatus: {
 			type: String,
-			enum: NoticeCategory,
+			enum: CommentStatus,
+			default: CommentStatus.ACTIVE,
+		},
+
+		commentGroup: {
+			type: String,
+			enum: CommentGroup,
 			required: true,
 		},
 
-		noticeStatus: {
-			type: String,
-			enum: NoticeStatus,
-			default: NoticeStatus.ACTIVE,
-		},
-
-		noticeTitle: {
+		commentContent: {
 			type: String,
 			required: true,
 		},
 
-		noticeContent: {
-			type: String,
+		commentRefId: {
+			type: Schema.Types.ObjectId,
 			required: true,
 		},
-		
+
 		memberId: {
 			type: Schema.Types.ObjectId,
 			required: true,
-			ref: 'Member',
 		},
 	},
-	{ timestamps: true, collection: 'notices' },
+	{ timestamps: true, collection: 'comments' },
 );
 
-export default NoticeSchema;
+export default CommentSchema;

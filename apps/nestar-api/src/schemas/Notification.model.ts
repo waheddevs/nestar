@@ -1,28 +1,58 @@
 import { Schema } from 'mongoose';
-import { ViewGroup } from '../libs/enums/view.enum';
+import { NotificationGroup, NotificationStatus, NotificationType } from '../libs/enums/notification.enum';
 
-const ViewSchema = new Schema(
+const NotificationSchema = new Schema(
 	{
-		viewGroup: {
+		notificationType: {
 			type: String,
-			enum: ViewGroup,
+			enum: NotificationType,
 			required: true,
 		},
 
-		viewRefId: {
-			type: Schema.Types.ObjectId,
+		notificationStatus: {
+			type: String,
+			enum: NotificationStatus,
+			default: NotificationStatus.WAIT,
+		},
+
+		notificationGroup: {
+			type: String,
+			enum: NotificationGroup,
 			required: true,
 		},
 
-		memberId: {
+		notificationTitle: {
+			type: String,
+			required: true,
+		},
+
+		notificationDesc: {
+			type: String,
+		},
+
+		authorId: {
 			type: Schema.Types.ObjectId,
 			required: true,
 			ref: 'Member',
 		},
+
+		receiverId: {
+			type: Schema.Types.ObjectId,
+			required: true,
+			ref: 'Member',
+		},
+
+		propertyId: {
+			type: Schema.Types.ObjectId,
+			ref: 'Property',
+		},
+
+		articleId: {
+			type: Schema.Types.ObjectId,
+			ref: 'BoardArticle',
+		},
 	},
-	{ timestamps: true, collection: 'views' },
+	{ timestamps: true, collection: 'notifications' },
 );
 
-ViewSchema.index({ memberId: 1, viewRefId: 1 }, { unique: true });
-
-export default ViewSchema;
+export default NotificationSchema;
