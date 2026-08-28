@@ -98,36 +98,36 @@ export class MemberResolver {
 	@Mutation((returns) => String)
 	public async imageUploader(
 		@Args({ name: 'file', type: () => GraphQLUpload })
-	{ createReadStream, filename, mimetype }: FileUpload,
-	@Args('target') target: String,
+		{ createReadStream, filename, mimetype }: FileUpload,
+		@Args('target') target: String,
 	): Promise<string> {
 		console.log('Mutation: imageUploader');
 
-	if (!filename) throw new Error(Message.UPLOAD_FAILED);
-	const validMime = validMimeTypes.includes(mimetype);
-	if (!validMime) throw new Error(Message.PROVIDE_ALLOWED_FORMAT);
+		if (!filename) throw new Error(Message.UPLOAD_FAILED);
+		const validMime = validMimeTypes.includes(mimetype);
+		if (!validMime) throw new Error(Message.PROVIDE_ALLOWED_FORMAT);
 
-	const imageName = getSerialForImage(filename);
-	const url = `uploads/${target}/${imageName}`;
-	const stream = createReadStream();
+		const imageName = getSerialForImage(filename);
+		const url = `uploads/${target}/${imageName}`;
+		const stream = createReadStream();
 
-	const result = await new Promise((resolve, reject) => {
-		stream
-			.pipe(createWriteStream(url))
-			.on('finish', async () => resolve(true))
-			.on('error', () => reject(false));
-	});
-	if (!result) throw new Error(Message.UPLOAD_FAILED);
+		const result = await new Promise((resolve, reject) => {
+			stream
+				.pipe(createWriteStream(url))
+				.on('finish', async () => resolve(true))
+				.on('error', () => reject(false));
+		});
+		if (!result) throw new Error(Message.UPLOAD_FAILED);
 
-	return url;
+		return url;
 	}
 
 	@UseGuards(AuthGuard)
 	@Mutation((returns) => [String])
 	public async imagesUploader(
 		@Args('files', { type: () => [GraphQLUpload] })
-	files: Promise<FileUpload>[],
-	@Args('target') target: String,
+		files: Promise<FileUpload>[],
+		@Args('target') target: String,
 	): Promise<string[]> {
 		console.log('Mutation: imagesUploader');
 
@@ -159,5 +159,5 @@ export class MemberResolver {
 
 		await Promise.all(promisedList);
 		return uploadedImages;
-}
+	}
 }
