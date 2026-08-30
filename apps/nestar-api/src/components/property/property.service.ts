@@ -7,9 +7,10 @@ import { PropertyInput } from '../../libs/dto/property/property.input';
 import { MemberService } from '../member/member.service';
 import { StatisticModifier, T } from '../../libs/types/common';
 import { PropertyStatus } from '../../libs/enums/property.enum';
-import { internalExecuteOperation } from 'node_modules/@apollo/server/dist/cjs/ApolloServer';
 import { ViewGroup } from '../../libs/enums/view.enum';
 import { ViewService } from '../view/view.service';
+import { PropertyUpdate } from '../../libs/dto/property/property.update';
+import moment from 'moment';
 
 @Injectable()
 export class PropertyService {
@@ -48,7 +49,7 @@ export class PropertyService {
 		if (memberId) {
 			const viewInput = { memberId: memberId, viewRefId: propertyId, viewGroup: ViewGroup.PROPERTY };
 			const newView = await this.viewService.recordView(viewInput);
-			if (!newView) {
+			if (newView) {
 				await this.propertyStatusEditor({ _id: propertyId, targetKey: 'propertyViews', modifier: 1 });
 				targetProperty.propertyViews++;
 			}
@@ -71,5 +72,32 @@ export class PropertyService {
 		}
 
 		return updatedProperty;
+	}
+
+	public async updateProperty(memberId: ObjectId, input: PropertyUpdate): Promise<PropertyUpdate> {
+		let { propertyStatus, soldAt, deletedAt } = input;
+		const search: T = {
+			_id: input._id,
+			memberId: memberId,
+			propertyStatus: PropertyStatus.ACTIVE,
+		};
+
+		if (propertyStatus === PropertyStatus.SOLD) soldAt = moment().toDate();
+		else if (propertyStatus === PropertyStatus.DELETE) deletedAt = moment().toDate();
+
+		const result = await this.propertyModel.findOneAndUpdate(search, input, { new: true }).exec();
+
+		if (!result) throw new InternalServerErrorException(Message.UPDATE_FAILED);
+
+		if (soldAt || deletedAt) {
+			await this.memberServive.memberStatsEditor({
+				_id: memberId,
+				targetKey: 'memberProperties',
+				modifier: -1,
+			});
+		}
+
+		// @ts-ignore
+		return result;
 	}
 }
