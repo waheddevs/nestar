@@ -15,7 +15,7 @@ export class PropertyUpdate {
 	propertyType?: PropertyType;
 
 	@IsOptional()
-	@Field(() => PropertyType, { nullable: true })
+	@Field(() => PropertyStatus, { nullable: true })
 	propertyStatus?: PropertyStatus;
 
 	@IsOptional()
