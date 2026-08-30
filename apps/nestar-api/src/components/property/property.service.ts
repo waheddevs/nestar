@@ -1,17 +1,23 @@
-import { BadRequestException, Injectable } from '@nestjs/common';
-import { Model } from 'mongoose';
+import { BadRequestException, Injectable, InternalServerErrorException } from '@nestjs/common';
+import { Model, ObjectId } from 'mongoose';
 import { InjectModel } from '@nestjs/mongoose';
-import { Mutation } from 'node_modules/@nestjs/graphql/dist';
 import { Property } from '../../libs/dto/property/property';
 import { Message } from '../../libs/enums/common.enum';
 import { PropertyInput } from '../../libs/dto/property/property.input';
 import { MemberService } from '../member/member.service';
+import { StatisticModifier, T } from '../../libs/types/common';
+import { PropertyStatus } from '../../libs/enums/property.enum';
+import { internalExecuteOperation } from 'node_modules/@apollo/server/dist/cjs/ApolloServer';
+import { ViewGroup } from '../../libs/enums/view.enum';
+import { ViewService } from '../view/view.service';
 
 @Injectable()
 export class PropertyService {
+	[x: string]: any;
 	constructor(
 		@InjectModel('Property') private readonly propertyModel: Model<Property>,
 		private memberServive: MemberService,
+		private viewService: ViewService,
 	) {}
 
 	public async createProperty(input: PropertyInput): Promise<Property> {
@@ -28,5 +34,42 @@ export class PropertyService {
 			console.log('Error, serviceModel', err);
 			throw new BadRequestException(Message.CREATE_FAILED);
 		}
+	}
+
+	public async getProperty(memberId: ObjectId, propertyId: ObjectId): Promise<Property> {
+		const search: T = {
+			_id: propertyId,
+			propertyStatus: PropertyStatus.ACTIVE,
+		};
+
+		const targetProperty: Property | null = await this.propertyModel.findOne(search).lean().exec();
+		if (!targetProperty) throw new InternalServerErrorException(Message.NO_DATA_FOUND);
+
+		if (memberId) {
+			const viewInput = { memberId: memberId, viewRefId: propertyId, viewGroup: ViewGroup.PROPERTY };
+			const newView = await this.viewService.recordView(viewInput);
+			if (!newView) {
+				await this.propertyStatusEditor({ _id: propertyId, targetKey: 'propertyViews', modifier: 1 });
+				targetProperty.propertyViews++;
+			}
+
+			// me liked
+		}
+
+		targetProperty.memberData = await this.memberServive.getMember(null as any, targetProperty.memberId);
+		return targetProperty;
+	}
+
+	public async propertyStatusEditor(input: StatisticModifier): Promise<Property | null> {
+		const { _id, targetKey, modifier } = input;
+		const updatedProperty = await this.propertyModel
+			.findOneAndUpdate({ _id }, { $inc: { [targetKey]: modifier } }, { new: true })
+			.exec();
+
+		if (!updatedProperty) {
+			throw new InternalServerErrorException(Message.NO_DATA_FOUND);
+		}
+
+		return updatedProperty;
 	}
 }
