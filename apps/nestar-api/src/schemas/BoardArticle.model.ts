@@ -15,7 +15,7 @@ const BoardArticleSchema = new Schema(
 			default: BoardArticleStatus.ACTIVE,
 		},
 
-		articleTitle: {
+		articleTitle: { 
 			type: String,
 			required: true,
 		},
