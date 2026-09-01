@@ -62,19 +62,6 @@ export class PropertyService {
 		return targetProperty;
 	}
 
-	public async propertyStatusEditor(input: StatisticModifier): Promise<Property | null> {
-		const { _id, targetKey, modifier } = input;
-		const updatedProperty = await this.propertyModel
-			.findOneAndUpdate({ _id }, { $inc: { [targetKey]: modifier } }, { new: true })
-			.exec();
-
-		if (!updatedProperty) {
-			throw new InternalServerErrorException(Message.NO_DATA_FOUND);
-		}
-
-		return updatedProperty;
-	}
-
 	public async updateProperty(memberId: ObjectId, input: PropertyUpdate): Promise<PropertyUpdate> {
 		let { propertyStatus, soldAt, deletedAt } = input;
 		const search: T = {
@@ -255,5 +242,18 @@ export class PropertyService {
 		if (!result) throw new InternalServerErrorException(Message.REMOVE_FAILED);
 
 		return result;
+	}
+
+	public async propertyStatusEditor(input: StatisticModifier): Promise<Property | null> {
+		const { _id, targetKey, modifier } = input;
+		const updatedProperty = await this.propertyModel
+			.findOneAndUpdate({ _id }, { $inc: { [targetKey]: modifier } }, { new: true })
+			.exec();
+
+		if (!updatedProperty) {
+			throw new InternalServerErrorException(Message.NO_DATA_FOUND);
+		}
+
+		return updatedProperty;
 	}
 }
