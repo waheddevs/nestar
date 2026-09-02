@@ -186,7 +186,7 @@ export class BoardArticleService {
 	public async boardArticleStatsEditor(input: StatisticModifier): Promise<BoardArticle> {
 		const { _id, targetKey, modifier } = input;
 		const updatedArticle = await this.boardArticleModel
-			.findOneAndUpdate(_id, { $inc: { [targetKey]: modifier } }, { new: true })
+			.findByIdAndUpdate(_id, { $inc: { [targetKey]: modifier } }, { new: true })
 			.exec();
 
 		if (!updatedArticle) throw new InternalServerErrorException(Message.NO_DATA_FOUND);
