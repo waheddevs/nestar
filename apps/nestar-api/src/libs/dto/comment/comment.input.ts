@@ -1,9 +1,9 @@
 import { Field, InputType, Int } from '@nestjs/graphql';
 import { IsIn, IsNotEmpty, IsOptional, Length, Min } from 'class-validator';
 import { ObjectId } from 'mongoose';
-import { CommentGroup } from '../../enums/comment.enum';
+import { CommentGroup } from '../../enums/comments.enum';
 import { Direction } from '../../enums/common.enum';
-import { availableCommentSorts } from '../../config';
+import { availableCommentSort } from '../../config';
 
 @InputType()
 export class CommentInput {
@@ -43,7 +43,7 @@ export class CommentsInquiry {
 	limit: number;
 
 	@IsOptional()
-	@IsIn(availableCommentSorts)
+	@IsIn(availableCommentSort)
 	@Field(() => String, { nullable: true })
 	sort?: string;
 
