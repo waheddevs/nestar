@@ -91,7 +91,7 @@ export class MemberService {
 				$in: [MemberStatus.ACTIVE, MemberStatus.BLOCK],
 			},
 		};
-		const targetMember = await this.memberModel.findOne(search).lean().exec();
+		const targetMember: Member | null = await this.memberModel.findOne(search).lean().exec();
 		if (!targetMember) throw new InternalServerErrorException(Message.NO_DATA_FOUND);
 
 		if (memberId && memberId.toString() !== targetId.toString()) {
@@ -103,9 +103,14 @@ export class MemberService {
 				await this.memberModel.findOneAndUpdate(search, { $inc: { memberViews: 1 } }, { new: true }).exec();
 				targetMember.memberViews++;
 			}
-
-			// meLiked
 			// meFollowed
+		}
+
+		if (memberId) {
+			const likeInput: LikeInput = { memberId, likeRefId: targetId, likeGroup: LikeGroup.MEMBER };
+			targetMember.meLiked = await this.likeService.checkLikeExistence(likeInput);
+		} else {
+			targetMember.meLiked = [];
 		}
 
 		return targetMember;
@@ -145,8 +150,10 @@ export class MemberService {
 		const input: LikeInput = { memberId: memberId, likeRefId: likeRefId, likeGroup: LikeGroup.MEMBER };
 
 		// LIKE TOGGLE
-		const modifier: number = await this.likeService.toggleLike(input);
-		const result = await this.memberStatsEditor({ _id: likeRefId, targetKey: 'memberLikes', modifier: modifier });
+		const likeCount = await this.likeService.toggleLike(input);
+		const result = await this.memberModel
+			.findByIdAndUpdate(likeRefId, { $set: { memberLikes: likeCount } }, { new: true })
+			.exec();
 
 		if (!result) throw new InternalServerErrorException(Message.SOMETHING_WENT_WRONG);
 

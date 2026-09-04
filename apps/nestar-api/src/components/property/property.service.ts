@@ -64,7 +64,10 @@ export class PropertyService {
 				targetProperty.propertyViews++;
 			}
 
-			// me liked
+			const likeInput: LikeInput = { memberId, likeRefId: propertyId, likeGroup: LikeGroup.PROPERTY };
+			targetProperty.meLiked = await this.likeService.checkLikeExistence(likeInput);
+		} else {
+			targetProperty.meLiked = [];
 		}
 
 		targetProperty.memberData = await this.memberServive.getMember(null as any, targetProperty.memberId);
@@ -200,8 +203,10 @@ export class PropertyService {
 		const input: LikeInput = { memberId: memberId, likeRefId: likeRefId, likeGroup: LikeGroup.PROPERTY };
 
 		// LIKE TOGGLE
-		const modifier: number = await this.likeService.toggleLike(input);
-		const result = await this.propertyStatsEditor({ _id: likeRefId, targetKey: 'propertyLikes', modifier: modifier });
+		const likeCount = await this.likeService.toggleLike(input);
+		const result = await this.propertyModel
+			.findByIdAndUpdate(likeRefId, { $set: { propertyLikes: likeCount } }, { new: true })
+			.exec();
 
 		if (!result) throw new InternalServerErrorException(Message.SOMETHING_WENT_WRONG);
 

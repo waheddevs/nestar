@@ -62,7 +62,10 @@ export class BoardArticleService {
 				targetBoardArticle.articleViews++;
 			}
 
-			// meLiked
+			const likeInput: LikeInput = { memberId, likeRefId: articleId, likeGroup: LikeGroup.ARTICLE };
+			targetBoardArticle.meLiked = await this.likeService.checkLikeExistence(likeInput);
+		} else {
+			targetBoardArticle.meLiked = [];
 		}
 
 		targetBoardArticle.memberData = await this.memberService.getMember(null as any, targetBoardArticle.memberId);
@@ -158,8 +161,10 @@ export class BoardArticleService {
 			const input: LikeInput = { memberId: memberId, likeRefId: likeRefId, likeGroup: LikeGroup.ARTICLE };
 	
 			// LIKE TOGGLE
-			const modifier: number = await this.likeService.toggleLike(input);
-			const result = await this.boardArticleStatsEditor({ _id: likeRefId, targetKey: 'articleLikes', modifier: modifier });
+			const likeCount = await this.likeService.toggleLike(input);
+			const result = await this.boardArticleModel
+				.findByIdAndUpdate(likeRefId, { $set: { articleLikes: likeCount } }, { new: true })
+				.exec();
 	
 			if (!result) throw new InternalServerErrorException(Message.SOMETHING_WENT_WRONG);
 	
