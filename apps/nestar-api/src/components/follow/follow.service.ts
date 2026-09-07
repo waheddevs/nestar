@@ -6,12 +6,19 @@ import { Model, ObjectId } from 'mongoose';
 import { InjectModel } from '@nestjs/mongoose';
 import { Direction, Message } from '../../libs/enums/common.enum';
 import { T } from '../../libs/types/common';
-import { lookupAuthMemberLiked, lookupFollowerData, lookupFollowingData } from '../../libs/config';
+import {
+	lookupAuthMemberFollowed,
+	lookupAuthMemberLiked,
+	lookupFollowerData,
+	lookupFollowingData,
+} from '../../libs/config';
 
 @Injectable()
 export class FollowService {
-    constructor(@InjectModel('Follow') private readonly followModel: Model<Follower | Following>, private readonly memberService: MemberService
-) {}
+	constructor(
+		@InjectModel('Follow') private readonly followModel: Model<Follower | Following>,
+		private readonly memberService: MemberService,
+	) {}
 
 	public async subscribe(followerId: ObjectId, followingId: ObjectId): Promise<Follower> {
 		if (followerId.toString() === followingId.toString()) {
@@ -73,8 +80,10 @@ export class FollowService {
 							{ $skip: (page - 1) * limit },
 							{ $limit: limit },
 							// meLiked
-                            lookupAuthMemberLiked(memberId, '$followingId') as any,
+							lookupAuthMemberLiked(memberId, '$followingId') as any,
 							// meFollowed
+							lookupAuthMemberFollowed({ followerId: memberId, followingId: '$followingId' }) as any,
+							// followingData
 							lookupFollowingData,
 							{ $unwind: '$followingData' },
 						],
@@ -105,8 +114,10 @@ export class FollowService {
 							{ $skip: (page - 1) * limit },
 							{ $limit: limit },
 							// meLiked
-                            lookupAuthMemberLiked(memberId, '$followerId') as any,
+							lookupAuthMemberLiked(memberId, '$followerId') as any,
 							// meFollowed
+                            lookupAuthMemberFollowed({ followerId: memberId, followingId: '$followerId' }) as any,
+							// followingData
 							lookupFollowerData,
 							{ $unwind: '$followerData' },
 						],
@@ -119,8 +130,4 @@ export class FollowService {
 
 		return result[0];
 	}
-
-    
-
-
 }
