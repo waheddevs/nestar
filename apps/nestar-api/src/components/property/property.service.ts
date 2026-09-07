@@ -6,6 +6,7 @@ import { Direction, Message } from '../../libs/enums/common.enum';
 import {
 	AgentPropertiesInquiry,
 	AllPropertiesInquiry,
+	OrdinaryInquiry,
 	PropertiesInquiry,
 	PropertyInput,
 } from '../../libs/dto/property/property.input';
@@ -111,7 +112,7 @@ export class PropertyService {
 		const result = await this.propertyModel
 			.aggregate([
 				{ $match: match },
-				{ $sort: sort },
+				{ $sort: sort }, 
 				{
 					$facet: {
 						list: [
@@ -161,6 +162,10 @@ export class PropertyService {
 				return { [ele]: true };
 			});
 		}
+	}
+
+	public async getFavorites(memberId: ObjectId, input: OrdinaryInquiry): Promise<Properties> {
+		return await this.likeService.getFavoritProperties(memberId, input);
 	}
 
 	public async getAgentProperties(memberId: ObjectId, input: AgentPropertiesInquiry): Promise<Properties> {
