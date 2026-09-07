@@ -20,6 +20,7 @@ export const availableCommentSort = ['createdAt', 'updatedAt'];
 // IMAGE CONFIGURATION (config.js)
 import { v4 as uuidv4 } from 'uuid';
 import * as path from 'path';
+import { T } from './types/common';
 
 export const validMimeTypes = ['image/png', 'image/jpg', 'image/jpeg'];
 export const getSerialForImage = (filename: string) => {
@@ -29,6 +30,37 @@ export const getSerialForImage = (filename: string) => {
 
 export const shapeIntoMongoObjectId = (target: any) => {
 	return typeof target === 'string' ? new ObjectId(target) : target;
+};
+
+export const lookupAuthMemberLiked = (memberId: T, targetRefId: string = '$_id') => {
+	return {
+		$lookup: {
+			from: 'likes',
+			let: {
+				likeRefId: targetRefId,
+				localMemberId: memberId,
+				localMyFavorite: true,
+			},
+			pipeline: [
+				{
+					$match: {
+						$expr: {
+							$and: [{ $eq: ['$likeRefId', '$$likeRefId'] }, { $eq: ['$memberId', '$$localMemberId'] }],
+						},
+					},
+				},
+				{
+					$project: {
+						_id: 0,
+						memberId: 1,
+						likeRefId: 1,
+						myFavorite: '$$localMyFavorite',
+					},
+				},
+			],
+			as: 'meLiked',
+		},
+	};
 };
 
 export const lookupMember = {
@@ -57,5 +89,3 @@ export const lookupFollowerData = {
 		as: 'followerData',
 	},
 };
-
-
