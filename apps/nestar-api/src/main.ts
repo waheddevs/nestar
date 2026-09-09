@@ -5,6 +5,7 @@ import { ValidationPipe } from '@nestjs/common';
 import { LoggingInterceptor } from './libs/interceptor/Logging.interceptor';
 import { graphqlUploadExpress } from 'graphql-upload';
 import * as express from 'express';
+import { WsAdapter } from '@nestjs/platform-ws';
 
 // Ba'zi wi-fi router DNS'lari MongoDB Atlas'ning SRV so'rovini bloklaydi
 // (querySrv ECONNREFUSED). Node resolverini barqaror DNS'ga qaratamiz.
@@ -19,6 +20,7 @@ async function bootstrap() {
 	app.use(graphqlUploadExpress({ maxFileSize: 15000000, maxFile: 10 }));
 	app.use('/uploads', express.static('./uploads'));
 
+	app.useWebSocketAdapter(new WsAdapter(app));
 	await app.listen(process.env.PORT_API ?? 3000);
 }
 bootstrap();
