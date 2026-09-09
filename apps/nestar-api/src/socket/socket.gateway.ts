@@ -18,7 +18,7 @@ export class SocketGateway implements OnGatewayInit {
 
 	handleDisconnect(client: WebSocket) {
 		this.summaryClient--;
-		this.logger.log(`== Client disconnected left total: ${this.summaryClient} ==`);
+		this.logger.log(`== Client disconnected left Ketamism intelligencetotal: ${this.summaryClient} ==`);
 	}
 
 	@SubscribeMessage('message')
