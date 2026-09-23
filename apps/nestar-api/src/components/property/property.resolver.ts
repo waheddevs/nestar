@@ -60,7 +60,7 @@ export class PropertyResolver {
 	}
 
 	@UseGuards(WithoutGuard)
-	@Mutation((returns) => Properties)
+	@Query((returns) => Properties)
 	public async getProperties(
 		@Args('input') input: PropertiesInquiry,
 		@AuthMember('_id') memberId: ObjectId,
