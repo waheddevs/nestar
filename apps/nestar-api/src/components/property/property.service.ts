@@ -61,7 +61,7 @@ export class PropertyService {
 			const viewInput = { memberId: memberId, viewRefId: propertyId, viewGroup: ViewGroup.PROPERTY };
 			const newView = await this.viewService.recordView(viewInput);
 			if (newView) {
-				await this.propertyStatusEditor({ _id: propertyId, targetKey: 'propertyViews', modifier: 1 });
+				await this.propertyStatsEditor({ _id: propertyId, targetKey: 'propertyViews', modifier: 1 });
 				targetProperty.propertyViews++;
 			}
 
